@@ -17,8 +17,10 @@ api будет доступно на порту `8080`, PostgreSQL — на `543
 ## Тестирование эндпоинтов API через Postman  
 
 1. **Регистрация пользователя**  
-   `POST http://localhost:8080/api/auth/register`  
+   для регистрации мы отправляем `POST` запрос на `http://localhost:8080/api/auth/register`  
    
+   в теле запроса пишем следующее
+
    ```json  
    {  
      "username": "user",  
@@ -26,27 +28,51 @@ api будет доступно на порту `8080`, PostgreSQL — на `543
    }  
    ```  
 
+   далее получаем ответ сервера об успешной регистрации
+
 2. **Авторизация**  
-   Необходимо отправить `GET http://localhost:8080/api/auth/login`
-   далее перейти во владку Authorization 
-   выбрать в выпадающем списке Auth Type => Basic Auth
-   ввести 
-   - Username: логин пользователя
-   - Password: пароль
-   отправить запрос и получить ответ сервера.
+
+   Необходимо отправить `POST` запрос на `http://localhost:8080/api/auth/login`
+
+   далее нам нужно поставить заголовок в вкладке headers
+      в поле key: Content-Type
+      в поле value: application/json
+
+   после этого переходим во вкладку body
+      выбрать тип raw
+      в выпадающем списке справа выбрать JSON
+      ввести тело запроса по формату:
+
+   {
+      "username": "user",
+      "password": "password"
+   }
+
+   далее получаем ответ сервера 200 OK
+
+   для всех дальнейших запросов необходимо передавать заголовок Authorization: Basic Auth
+
 
 3. **Создание задачи**  
-   `POST http://localhost:8080/api/tasks`  
+   для создания новой задачи отправляем `POST` запрос на `http://localhost:8080/api/tasks`  
+
+   Обязательно добавить заголовки Authorization Type: Basic Auth в соответствующей вкладке postman
+   пример кредов:
+   Username: user
+   Password: passwors
+
+   Тело (raw) запроса:
+
    ```json  
    {  
-     "title": "Моя задача",  
+     "title": "Моя новая таска",  
      "description": "Описание",  
      "assignees": [1]  
    }  
    ```  
 
 4. **Список задач**  
-   `GET http://localhost:8080/api/tasks`  
+   Что бы посмотреть список задач достаточно просто отправить `GET` запрос на  `http://localhost:8080/api/tasks` и в ответе вернётся список всех задач.
 
 5. **Получение задачи по ID**  
    `GET http://localhost:8080/api/tasks/{id}`  

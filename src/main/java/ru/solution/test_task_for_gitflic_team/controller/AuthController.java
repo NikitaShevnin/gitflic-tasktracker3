@@ -3,17 +3,12 @@ package ru.solution.test_task_for_gitflic_team.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import lombok.extern.slf4j.Slf4j;
-import ru.solution.test_task_for_gitflic_team.dto.UserInfoDto;
 import ru.solution.test_task_for_gitflic_team.dto.UserDto;
 import ru.solution.test_task_for_gitflic_team.entities.User;
 import ru.solution.test_task_for_gitflic_team.service.UserService;
@@ -49,30 +44,6 @@ public class AuthController {
         } catch (Exception e) {
             log.error("Authentication failed for user: {}. Reason: {}", dto.username(), e.getMessage());
             throw e;
-        }
-    }
-
-    @PostMapping("/login")
-    public UserInfoDto login(@AuthenticationPrincipal User user) {
-        log.info("Login attempt for user ID: {}", user != null ? user.getId() : "null");
-        
-        if (user == null) {
-            log.error("Login failed - no authenticated user found");
-            throw new AuthenticationCredentialsNotFoundException("User authentication failed");
-        }
-
-        try {
-            UserInfoDto userInfo = new UserInfoDto(user.getId(), user.getUsername());
-            log.info("Login successful for user: {}", user.getUsername());
-            return userInfo;
-        } catch (Exception e) {
-            log.error("Error during login processing for user ID: {}. Error: {}", 
-                     user.getId(), e.getMessage(), e);
-            throw new ResponseStatusException(
-                HttpStatus.INTERNAL_SERVER_ERROR, 
-                "Error processing login request", 
-                e
-            );
         }
     }
 }

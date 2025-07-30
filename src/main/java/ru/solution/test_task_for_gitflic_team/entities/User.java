@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import java.util.Collection;
 import java.util.Set;
@@ -25,9 +27,11 @@ public class User implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "creator")
+    @JsonIgnore
     private Set<Task> createdTasks;
 
     @ManyToMany(mappedBy = "assignees")
+    @JsonIgnore
     private Set<Task> assignedTasks;
 
     @Override
