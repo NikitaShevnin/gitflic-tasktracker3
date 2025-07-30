@@ -3,12 +3,14 @@ package ru.solution.test_task_for_gitflic_team.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
+import ru.solution.test_task_for_gitflic_team.dto.UserInfoDto;
 import ru.solution.test_task_for_gitflic_team.dto.UserDto;
 import ru.solution.test_task_for_gitflic_team.entities.User;
 import ru.solution.test_task_for_gitflic_team.service.UserService;
@@ -45,5 +47,10 @@ public class AuthController {
             log.error("Authentication failed for user: {}. Reason: {}", dto.username(), e.getMessage());
             throw e;
         }
+    }
+
+    @PostMapping("/login")
+    public UserInfoDto login(@AuthenticationPrincipal User user) {
+        return new UserInfoDto(user.getId(), user.getUsername());
     }
 }
