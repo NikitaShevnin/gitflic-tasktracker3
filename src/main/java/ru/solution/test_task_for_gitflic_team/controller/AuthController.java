@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody @Valid UserDto dto) {
+    public UserResponseDto login(@RequestBody @Valid UserDto dto) {
         log.info("Login attempt for user: {}", dto.username());
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -42,7 +42,7 @@ public class AuthController {
             User user = (User) authentication.getPrincipal();
             user.setPassword(null);
             log.info("User {} successfully authenticated", dto.username());
-            return user;
+            return DtoMapper.toDto(user);
         } catch (Exception e) {
             log.error("Authentication failed for user: {}. Reason: {}", dto.username(), e.getMessage());
             throw e;
