@@ -10,4 +10,5 @@ public final class Errors {
     public static final String ONLY_CREATOR_STATUS = "Only creator can change status";
     public static final String INVALID_STATUS_CHANGE = "Invalid status change";
     public static final String COMPLETED_CANNOT_CHANGE = "Completed tasks cannot change";
+    public static final String TASK_NOT_FOUND = "Task not found";
 }
