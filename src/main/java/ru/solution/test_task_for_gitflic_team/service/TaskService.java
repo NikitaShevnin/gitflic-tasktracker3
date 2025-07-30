@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.solution.test_task_for_gitflic_team.entities.Task;
 import ru.solution.test_task_for_gitflic_team.entities.TaskStatus;
 import ru.solution.test_task_for_gitflic_team.entities.User;
+import ru.solution.test_task_for_gitflic_team.dto.DtoMapper;
+import ru.solution.test_task_for_gitflic_team.dto.TaskResponseDto;
 import ru.solution.test_task_for_gitflic_team.repository.TaskRepository;
 import ru.solution.test_task_for_gitflic_team.repository.UserRepository;
 import ru.solution.test_task_for_gitflic_team.errors.Errors;
@@ -25,29 +27,34 @@ public class TaskService {
 
     @Cacheable("tasks")
     @Transactional(readOnly = true)
-    public List<Task> findAll() {
+    public List<TaskResponseDto> findAll() {
         log.debug("Fetching all tasks from repository with users");
         List<Task> tasks = taskRepository.findAllWithUsers();
         log.info("Found {} tasks in total with users loaded", tasks.size());
-        return tasks;
+        return tasks.stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     @Cacheable(value = "task", key = "#id")
     @Transactional(readOnly = true)
-    public Task findById(Long id) {
+    public TaskResponseDto findById(Long id) {
+        Task task = getTask(id);
+        return DtoMapper.toDto(task);
+    }
+
+    private Task getTask(Long id) {
         log.debug("Looking for task with ID: {} with users", id);
-        Task task = taskRepository.findByIdWithUsers(id)
+        return taskRepository.findByIdWithUsers(id)
                 .orElseThrow(() -> {
                     log.error("Task not found with ID: {}", id);
                     return new IllegalArgumentException(Errors.TASK_NOT_FOUND);
                 });
-        log.debug("Found task with users: ID={}, Title={}", task.getId(), task.getTitle());
-        return task;
     }
 
     @Transactional
     @CacheEvict(value = {"tasks", "task"}, allEntries = true)
-    public Task create(Task task, User creator, Set<Long> assigneeIds) {
+    public TaskResponseDto create(Task task, User creator, Set<Long> assigneeIds) {
         log.info("Creating new task by user ID: {}", creator.getId());
         log.debug("Task details - Title: {}, Assignees IDs: {}", task.getTitle(), assigneeIds);
         
@@ -60,15 +67,15 @@ public class TaskService {
         
         Task savedTask = taskRepository.save(task);
         log.info("Task created successfully with ID: {}", savedTask.getId());
-        return savedTask;
+        return DtoMapper.toDto(savedTask);
     }
 
     @Transactional
     @CacheEvict(value = {"tasks", "task"}, key = "#id", allEntries = true)
-    public Task update(Long id, Task updated, User requester) {
+    public TaskResponseDto update(Long id, Task updated, User requester) {
         log.info("Updating task ID: {} by user ID: {}", id, requester.getId());
         
-        Task task = findById(id);
+        Task task = getTask(id);
         if (!task.getCreator().getId().equals(requester.getId())) {
             log.warn("User ID {} attempted to update task they didn't create", requester.getId());
             throw new IllegalArgumentException(Errors.ONLY_CREATOR_UPDATE);
@@ -81,7 +88,7 @@ public class TaskService {
         
         Task savedTask = taskRepository.save(task);
         log.info("Task ID: {} updated successfully", id);
-        return savedTask;
+        return DtoMapper.toDto(savedTask);
     }
 
     @Transactional
@@ -89,7 +96,7 @@ public class TaskService {
     public void delete(Long id, User requester) {
         log.info("Deleting task ID: {} by user ID: {}", id, requester.getId());
         
-        Task task = findById(id);
+        Task task = getTask(id);
         if (!task.getCreator().getId().equals(requester.getId())) {
             log.warn("User ID {} attempted to delete task they didn't create", requester.getId());
             throw new IllegalArgumentException(Errors.ONLY_CREATOR_DELETE);
@@ -101,11 +108,11 @@ public class TaskService {
 
     @Transactional
     @CacheEvict(value = {"tasks", "task"}, key = "#id", allEntries = true)
-    public Task changeStatus(Long id, TaskStatus status, User requester) {
+    public TaskResponseDto changeStatus(Long id, TaskStatus status, User requester) {
         log.info("Changing status for task ID: {} to {} by user ID: {}", 
                 id, status, requester.getId());
         
-        Task task = findById(id);
+        Task task = getTask(id);
         if (!task.getCreator().getId().equals(requester.getId())) {
             log.warn("User ID {} attempted to change status of task they didn't create", requester.getId());
             throw new IllegalArgumentException(Errors.ONLY_CREATOR_STATUS);
@@ -117,7 +124,7 @@ public class TaskService {
         task.setStatus(status);
         Task savedTask = taskRepository.save(task);
         log.info("Status changed successfully for task ID: {}", id);
-        return savedTask;
+        return DtoMapper.toDto(savedTask);
     }
 
     private void validateTransition(TaskStatus from, TaskStatus to) {
