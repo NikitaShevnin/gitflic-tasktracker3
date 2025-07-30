@@ -10,6 +10,7 @@ import ru.solution.test_task_for_gitflic_team.entities.TaskStatus;
 import ru.solution.test_task_for_gitflic_team.entities.User;
 import ru.solution.test_task_for_gitflic_team.repository.TaskRepository;
 import ru.solution.test_task_for_gitflic_team.repository.UserRepository;
+import ru.solution.test_task_for_gitflic_team.errors.Errors;
 
 import java.util.List;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class TaskService {
     public Task update(Long id, Task updated, User requester) {
         Task task = findById(id);
         if (!task.getCreator().getId().equals(requester.getId())) {
-            throw new IllegalArgumentException("Only creator can update");
+            throw new IllegalArgumentException(Errors.ONLY_CREATOR_UPDATE);
         }
         task.setTitle(updated.getTitle());
         task.setDescription(updated.getDescription());
@@ -58,7 +59,7 @@ public class TaskService {
     public void delete(Long id, User requester) {
         Task task = findById(id);
         if (!task.getCreator().getId().equals(requester.getId())) {
-            throw new IllegalArgumentException("Only creator can delete");
+            throw new IllegalArgumentException(Errors.ONLY_CREATOR_DELETE);
         }
         taskRepository.delete(task);
     }
@@ -68,7 +69,7 @@ public class TaskService {
     public Task changeStatus(Long id, TaskStatus status, User requester) {
         Task task = findById(id);
         if (!task.getCreator().getId().equals(requester.getId())) {
-            throw new IllegalArgumentException("Only creator can change status");
+            throw new IllegalArgumentException(Errors.ONLY_CREATOR_STATUS);
         }
         validateTransition(task.getStatus(), status);
         task.setStatus(status);
@@ -79,22 +80,22 @@ public class TaskService {
         switch (from) {
             case NEW -> {
                 if (to != TaskStatus.IN_PROGRESS && to != TaskStatus.COMPLETED) {
-                    throw new IllegalArgumentException("Invalid status change");
+                    throw new IllegalArgumentException(Errors.INVALID_STATUS_CHANGE);
                 }
             }
             case IN_PROGRESS -> {
                 if (to != TaskStatus.PAUSED && to != TaskStatus.COMPLETED) {
-                    throw new IllegalArgumentException("Invalid status change");
+                    throw new IllegalArgumentException(Errors.INVALID_STATUS_CHANGE);
                 }
             }
             case PAUSED -> {
                 if (to != TaskStatus.IN_PROGRESS && to != TaskStatus.COMPLETED) {
-                    throw new IllegalArgumentException("Invalid status change");
+                    throw new IllegalArgumentException(Errors.INVALID_STATUS_CHANGE);
                 }
             }
             case COMPLETED -> {
                 if (to != TaskStatus.COMPLETED) {
-                    throw new IllegalArgumentException("Completed tasks cannot change");
+                    throw new IllegalArgumentException(Errors.COMPLETED_CANNOT_CHANGE);
                 }
             }
         }

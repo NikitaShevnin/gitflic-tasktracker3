@@ -21,10 +21,10 @@
 		<developer/>
 	</developers>
 	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
+		<connection>scm:git:https://example.com/gitflic-tasktracker.git</connection>
+		<developerConnection>scm:git:https://example.com/gitflic-tasktracker.git</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://example.com/gitflic-tasktracker</url>
 	</scm>
 	<properties>
 		<java.version>17</java.version>
@@ -35,8 +35,13 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-cache</artifactId>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>3.1.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
