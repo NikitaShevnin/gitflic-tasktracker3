@@ -24,6 +24,7 @@ public class TaskService {
     private final UserRepository userRepository;
 
     @Cacheable("tasks")
+    @Transactional(readOnly = true)
     public List<Task> findAll() {
         log.debug("Fetching all tasks from repository");
         List<Task> tasks = taskRepository.findAll();
@@ -32,6 +33,7 @@ public class TaskService {
     }
 
     @Cacheable(value = "task", key = "#id")
+    @Transactional(readOnly = true)
     public Task findById(Long id) {
         log.debug("Looking for task with ID: {}", id);
         Task task = taskRepository.findById(id)

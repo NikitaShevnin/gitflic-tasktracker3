@@ -9,7 +9,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
+import ru.solution.test_task_for_gitflic_team.dto.DtoMapper;
 import ru.solution.test_task_for_gitflic_team.dto.UserDto;
+import ru.solution.test_task_for_gitflic_team.dto.UserResponseDto;
 import ru.solution.test_task_for_gitflic_team.entities.User;
 import ru.solution.test_task_for_gitflic_team.service.UserService;
 
@@ -23,11 +25,11 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public User register(@RequestBody @Valid UserDto dto) {
+    public UserResponseDto register(@RequestBody @Valid UserDto dto) {
         log.info("Attempt to register new user with username: {}", dto.username());
         User registeredUser = userService.register(dto.username(), dto.password());
         log.info("User registered successfully with ID: {}", registeredUser.getId());
-        return registeredUser;
+        return DtoMapper.toDto(registeredUser);
     }
 
     @PostMapping("/login")

@@ -11,6 +11,8 @@ import ru.solution.test_task_for_gitflic_team.entities.Task;
 import ru.solution.test_task_for_gitflic_team.entities.TaskStatus;
 import ru.solution.test_task_for_gitflic_team.entities.User;
 import ru.solution.test_task_for_gitflic_team.service.TaskService;
+import ru.solution.test_task_for_gitflic_team.dto.TaskResponseDto;
+import ru.solution.test_task_for_gitflic_team.dto.DtoMapper;
 
 import java.util.List;
 
@@ -22,25 +24,27 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping
-    public List<Task> all() {
+    public List<TaskResponseDto> all() {
         log.info("Requesting all tasks");
         List<Task> tasks = taskService.findAll();
         log.debug("Found {} tasks", tasks.size());
-        return tasks;
+        return tasks.stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Task get(@PathVariable Long id) {
+    public TaskResponseDto get(@PathVariable Long id) {
         log.info("Requesting task with ID: {}", id);
         Task task = taskService.findById(id);
         log.debug("Found task: ID={}, Title={}", task.getId(), task.getTitle());
-        return task;
+        return DtoMapper.toDto(task);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Task create(@RequestBody @Valid TaskDto dto,
-                      @AuthenticationPrincipal User creator) {
+    public TaskResponseDto create(@RequestBody @Valid TaskDto dto,
+                                @AuthenticationPrincipal User creator) {
         log.info("Creating new task by user {} (ID: {})", creator.getUsername(), creator.getId());
         log.debug("Task details - Title: {}, Assignees: {}", dto.title(), dto.assignees());
         
@@ -50,13 +54,13 @@ public class TaskController {
         
         Task createdTask = taskService.create(task, creator, dto.assignees());
         log.info("Task created successfully with ID: {}", createdTask.getId());
-        return createdTask;
+        return DtoMapper.toDto(createdTask);
     }
 
     @PutMapping("/{id}")
-    public Task update(@PathVariable Long id,
-                      @RequestBody @Valid TaskDto dto,
-                      @AuthenticationPrincipal User creator) {
+    public TaskResponseDto update(@PathVariable Long id,
+                                @RequestBody @Valid TaskDto dto,
+                                @AuthenticationPrincipal User creator) {
         log.info("Updating task ID: {} by user {} (ID: {})", 
                 id, creator.getUsername(), creator.getId());
         log.debug("Update details - Title: {}, Description: {}", dto.title(), dto.description());
@@ -67,7 +71,7 @@ public class TaskController {
         
         Task result = taskService.update(id, updated, creator);
         log.info("Task ID: {} updated successfully", id);
-        return result;
+        return DtoMapper.toDto(result);
     }
 
     @DeleteMapping("/{id}")
@@ -80,13 +84,13 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/status")
-    public Task changeStatus(@PathVariable Long id,
-                           @RequestParam TaskStatus status,
-                           @AuthenticationPrincipal User user) {
+    public TaskResponseDto changeStatus(@PathVariable Long id,
+                                      @RequestParam TaskStatus status,
+                                      @AuthenticationPrincipal User user) {
         log.info("Changing status for task ID: {} to {} by user {} (ID: {})", 
                 id, status, user.getUsername(), user.getId());
         Task updatedTask = taskService.changeStatus(id, status, user);
         log.info("Status changed successfully for task ID: {}", id);
-        return updatedTask;
+        return DtoMapper.toDto(updatedTask);
     }
 }
