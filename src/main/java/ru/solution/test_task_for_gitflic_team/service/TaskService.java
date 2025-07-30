@@ -26,22 +26,22 @@ public class TaskService {
     @Cacheable("tasks")
     @Transactional(readOnly = true)
     public List<Task> findAll() {
-        log.debug("Fetching all tasks from repository");
-        List<Task> tasks = taskRepository.findAll();
-        log.info("Found {} tasks in total", tasks.size());
+        log.debug("Fetching all tasks from repository with users");
+        List<Task> tasks = taskRepository.findAllWithUsers();
+        log.info("Found {} tasks in total with users loaded", tasks.size());
         return tasks;
     }
 
     @Cacheable(value = "task", key = "#id")
     @Transactional(readOnly = true)
     public Task findById(Long id) {
-        log.debug("Looking for task with ID: {}", id);
-        Task task = taskRepository.findById(id)
+        log.debug("Looking for task with ID: {} with users", id);
+        Task task = taskRepository.findByIdWithUsers(id)
                 .orElseThrow(() -> {
                     log.error("Task not found with ID: {}", id);
                     return new IllegalArgumentException(Errors.TASK_NOT_FOUND);
                 });
-        log.debug("Found task: ID={}, Title={}", task.getId(), task.getTitle());
+        log.debug("Found task with users: ID={}, Title={}", task.getId(), task.getTitle());
         return task;
     }
 
