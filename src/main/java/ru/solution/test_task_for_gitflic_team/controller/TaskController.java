@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.solution.test_task_for_gitflic_team.dto.TaskDto;
+import ru.solution.test_task_for_gitflic_team.dto.ErrorResponse;
 import ru.solution.test_task_for_gitflic_team.entity.TaskStatus;
 import ru.solution.test_task_for_gitflic_team.entity.User;
 import ru.solution.test_task_for_gitflic_team.service.TaskService;
@@ -14,6 +16,7 @@ import ru.solution.test_task_for_gitflic_team.dto.TaskResponseDto;
 import ru.solution.test_task_for_gitflic_team.entity.Task;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
@@ -84,10 +87,28 @@ public class TaskController {
     public TaskResponseDto changeStatus(@PathVariable Long id,
                                       @RequestParam TaskStatus status,
                                       @AuthenticationPrincipal User user) {
-        log.info("Changing status for task ID: {} to {} by user {} (ID: {})", 
+        log.info("Changing status for task ID: {} to {} by user {} (ID: {})",
                 id, status, user.getUsername(), user.getId());
         TaskResponseDto updatedTask = taskService.changeStatus(id, status, user);
         log.info("Status changed successfully for task ID: {}", id);
         return updatedTask;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgument(IllegalArgumentException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler({NoSuchElementException.class, UsernameNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFound(Exception ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRuntime(RuntimeException ex) {
+        return new ErrorResponse(ex.getMessage());
     }
 }
