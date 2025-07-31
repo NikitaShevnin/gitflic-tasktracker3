@@ -34,7 +34,7 @@ public class TaskController {
     public TaskResponseDto get(@PathVariable Long id) {
         log.info("Requesting task with ID: {}", id);
         TaskResponseDto task = taskService.findById(id);
-        log.debug("Found task: ID={}, Title={}", id, task.title());
+        log.debug("Found task: ID={}, Title={}", id, task.getTitle());
         return task;
     }
 
@@ -50,7 +50,7 @@ public class TaskController {
         task.setDescription(dto.description());
         
         TaskResponseDto createdTask = taskService.create(task, creator, dto.assignees());
-        log.info("Task created successfully with ID: {}", createdTask.id());
+        log.info("Task created successfully with ID: {}", createdTask.getId());
         return createdTask;
     }
 
