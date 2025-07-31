@@ -14,6 +14,7 @@ import ru.solution.test_task_for_gitflic_team.dto.TaskResponseDto;
 import ru.solution.test_task_for_gitflic_team.repository.TaskRepository;
 import ru.solution.test_task_for_gitflic_team.repository.UserRepository;
 import ru.solution.test_task_for_gitflic_team.exception.Exception;
+import ru.solution.test_task_for_gitflic_team.exception.NotFoundException;
 import ru.solution.test_task_for_gitflic_team.service.transition.TaskStatusService;
 
 import java.util.List;
@@ -41,18 +42,13 @@ public class TaskServiceImpl implements TaskService {
     @Cacheable(value = "task", key = "#id")
     @Transactional(readOnly = true)
     public TaskResponseDto findById(Long id) {
-        Task task = getTask(id);
-        return DtoMapper.toDto(task);
-    }
-
-    @Transactional(readOnly = true)
-    private Task getTask(Long id) {
         log.debug("Looking for task with ID: {} with users", id);
-        return taskRepository.findByIdWithUsers(id)
+        Task task = taskRepository.findByIdWithUsers(id)
                 .orElseThrow(() -> {
                     log.error("Task not found with ID: {}", id);
-                    return new IllegalArgumentException(Exception.TASK_NOT_FOUND);
+                    return new NotFoundException(Exception.TASK_NOT_FOUND);
                 });
+        return DtoMapper.toDto(task);
     }
 
     @Transactional
@@ -78,7 +74,11 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponseDto update(Long id, Task updated, User requester) {
         log.info("Updating task ID: {} by user ID: {}", id, requester.getId());
         
-        Task task = getTask(id);
+        Task task = taskRepository.findByIdWithUsers(id)
+                .orElseThrow(() -> {
+                    log.error("Task not found with ID: {}", id);
+                    return new NotFoundException(Exception.TASK_NOT_FOUND);
+                });
         if (!task.getCreator().getId().equals(requester.getId())) {
             log.warn("User ID {} attempted to update task they didn't create", requester.getId());
             throw new IllegalArgumentException(Exception.ONLY_CREATOR_UPDATE);
@@ -99,7 +99,11 @@ public class TaskServiceImpl implements TaskService {
     public void delete(Long id, User requester) {
         log.info("Deleting task ID: {} by user ID: {}", id, requester.getId());
         
-        Task task = getTask(id);
+        Task task = taskRepository.findByIdWithUsers(id)
+                .orElseThrow(() -> {
+                    log.error("Task not found with ID: {}", id);
+                    return new NotFoundException(Exception.TASK_NOT_FOUND);
+                });
         if (!task.getCreator().getId().equals(requester.getId())) {
             log.warn("User ID {} attempted to delete task they didn't create", requester.getId());
             throw new IllegalArgumentException(Exception.ONLY_CREATOR_DELETE);
@@ -115,7 +119,11 @@ public class TaskServiceImpl implements TaskService {
         log.info("Changing status for task ID: {} to {} by user ID: {}", 
                 id, status, requester.getId());
         
-        Task task = getTask(id);
+        Task task = taskRepository.findByIdWithUsers(id)
+                .orElseThrow(() -> {
+                    log.error("Task not found with ID: {}", id);
+                    return new NotFoundException(Exception.TASK_NOT_FOUND);
+                });
         if (!task.getCreator().getId().equals(requester.getId())) {
             log.warn("User ID {} attempted to change status of task they didn't create", requester.getId());
             throw new IllegalArgumentException(Exception.ONLY_CREATOR_STATUS);
