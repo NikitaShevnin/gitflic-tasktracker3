@@ -2,6 +2,8 @@ package ru.solution.test_task_for_gitflic_team.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 import ru.solution.test_task_for_gitflic_team.dto.DtoMapper;
+import ru.solution.test_task_for_gitflic_team.dto.ErrorResponse;
 import ru.solution.test_task_for_gitflic_team.dto.UserDto;
 import ru.solution.test_task_for_gitflic_team.dto.UserResponseDto;
 import ru.solution.test_task_for_gitflic_team.entity.User;
@@ -41,5 +44,23 @@ public class AuthController {
         user.setPassword(null);
         log.info("User {} successfully authenticated", dto.username());
         return DtoMapper.toDto(user);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgument(IllegalArgumentException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler({NoSuchElementException.class, UsernameNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFound(Exception ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRuntime(RuntimeException ex) {
+        return new ErrorResponse(ex.getMessage());
     }
 }
