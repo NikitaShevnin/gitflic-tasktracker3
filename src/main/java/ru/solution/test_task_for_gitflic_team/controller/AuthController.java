@@ -3,6 +3,9 @@ package ru.solution.test_task_for_gitflic_team.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 import ru.solution.test_task_for_gitflic_team.dto.DtoMapper;
@@ -17,6 +20,7 @@ import ru.solution.test_task_for_gitflic_team.service.UserService;
 @Slf4j
 public class AuthController {
     private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -30,7 +34,11 @@ public class AuthController {
     @PostMapping("/login")
     public UserResponseDto login(@RequestBody @Valid UserDto dto) {
         log.info("Login attempt for user: {}", dto.username());
-        User user = userService.login(dto.username(), dto.password());
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.username(), dto.password()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = (User) authentication.getPrincipal();
+        user.setPassword(null);
         log.info("User {} successfully authenticated", dto.username());
         return DtoMapper.toDto(user);
     }
