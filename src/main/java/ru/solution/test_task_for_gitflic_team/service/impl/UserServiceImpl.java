@@ -1,4 +1,4 @@
-package ru.solution.test_task_for_gitflic_team.service;
+package ru.solution.test_task_for_gitflic_team.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.solution.test_task_for_gitflic_team.entity.User;
 import ru.solution.test_task_for_gitflic_team.repository.UserRepository;
 import ru.solution.test_task_for_gitflic_team.exception.Exception;
-import ru.solution.test_task_for_gitflic_team.exception.NotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
 @Service
@@ -17,6 +20,7 @@ import ru.solution.test_task_for_gitflic_team.exception.NotFoundException;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -25,7 +29,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.error("User not found with username: {}", username);
-                    return new NotFoundException(Exception.USER_NOT_FOUND);
+                    return new EntityNotFoundException(Exception.USER_NOT_FOUND);
                 });
         log.info("User loaded successfully: {}", username);
         return user;
@@ -47,6 +51,15 @@ public class UserServiceImpl implements UserService {
         User registeredUser = userRepository.save(user);
         log.info("User registered successfully with ID: {}", registeredUser.getId());
         return registeredUser;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User authenticate(String username, String password) {
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return (User) authentication.getPrincipal();
     }
 
 }

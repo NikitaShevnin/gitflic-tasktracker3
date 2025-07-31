@@ -1,9 +1,10 @@
 package ru.solution.test_task_for_gitflic_team.dto;
 
 import ru.solution.test_task_for_gitflic_team.entity.Task;
+import java.util.UUID;
 
 public class TaskResponseDto {
-    private Long id;
+    private UUID id;
     private String title;
     private String description;
     private String status;
@@ -17,7 +18,7 @@ public class TaskResponseDto {
         this.creatorUsername = task.getCreator() != null ? task.getCreator().getUsername() : null;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
