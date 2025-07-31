@@ -1,7 +1,7 @@
 package ru.solution.test_task_for_gitflic_team.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.solution.test_task_for_gitflic_team.entities.User;
+import ru.solution.test_task_for_gitflic_team.entity.User;
 
 import java.util.Optional;
 

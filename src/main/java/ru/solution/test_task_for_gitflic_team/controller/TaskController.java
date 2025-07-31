@@ -7,17 +7,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.solution.test_task_for_gitflic_team.dto.TaskDto;
-import ru.solution.test_task_for_gitflic_team.entities.TaskStatus;
-import ru.solution.test_task_for_gitflic_team.entities.User;
+import ru.solution.test_task_for_gitflic_team.entity.TaskStatus;
+import ru.solution.test_task_for_gitflic_team.entity.User;
 import ru.solution.test_task_for_gitflic_team.service.TaskService;
 import ru.solution.test_task_for_gitflic_team.dto.TaskResponseDto;
-import ru.solution.test_task_for_gitflic_team.entities.Task;
+import ru.solution.test_task_for_gitflic_team.entity.Task;
 
 import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/task")
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;

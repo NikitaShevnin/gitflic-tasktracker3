@@ -3,7 +3,7 @@ package ru.solution.test_task_for_gitflic_team.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.solution.test_task_for_gitflic_team.entities.Task;
+import ru.solution.test_task_for_gitflic_team.entity.Task;
 
 import java.util.List;
 import java.util.Optional;

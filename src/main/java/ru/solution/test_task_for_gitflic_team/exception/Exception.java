@@ -1,7 +1,7 @@
-package ru.solution.test_task_for_gitflic_team.errors;
+package ru.solution.test_task_for_gitflic_team.exception;
 
-public final class Errors {
-    private Errors() {}
+public final class Exception {
+    private Exception() {}
 
     public static final String USER_NOT_FOUND = "User not found";
     public static final String USER_EXISTS = "User already exists";
