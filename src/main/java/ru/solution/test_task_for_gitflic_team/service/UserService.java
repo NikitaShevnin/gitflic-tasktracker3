@@ -8,19 +8,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+import jakarta.validation.constraints.NotBlank;
 import ru.solution.test_task_for_gitflic_team.entities.User;
 import ru.solution.test_task_for_gitflic_team.repository.UserRepository;
 import ru.solution.test_task_for_gitflic_team.errors.Errors;
 
 @Slf4j
 @Service
+@Validated
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NotBlank String username) throws UsernameNotFoundException {
         log.debug("Attempting to load user by username: {}", username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
@@ -32,7 +35,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User register(String username, String password) {
+    public User register(@NotBlank String username, @NotBlank String password) {
         log.info("Attempting to register new user: {}", username);
         
         if (userRepository.existsByUsername(username)) {
