@@ -9,8 +9,8 @@ import ru.solution.test_task_for_gitflic_team.dto.ErrorResponse;
 
 import java.util.NoSuchElementException;
 
-@RestControllerAdvice
-public class GlobalExceptionHandler {
+@RestControllerAdvice(basePackages = "ru.solution.test_task_for_gitflic_team.controller")
+public class ApiExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -21,6 +21,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoSuchElementException.class, UsernameNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(Exception ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRuntime(RuntimeException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 }

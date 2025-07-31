@@ -1,4 +1,4 @@
-package ru.solution.test_task_for_gitflic_team.entities;
+package ru.solution.test_task_for_gitflic_team.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

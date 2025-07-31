@@ -1,7 +1,7 @@
 package ru.solution.test_task_for_gitflic_team.dto;
 
-import ru.solution.test_task_for_gitflic_team.entities.Task;
-import ru.solution.test_task_for_gitflic_team.entities.User;
+import ru.solution.test_task_for_gitflic_team.entity.Task;
+import ru.solution.test_task_for_gitflic_team.entity.User;
 
 public final class DtoMapper {
     private DtoMapper() {}

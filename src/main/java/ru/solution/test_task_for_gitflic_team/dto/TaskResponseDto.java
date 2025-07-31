@@ -1,6 +1,6 @@
 package ru.solution.test_task_for_gitflic_team.dto;
 
-import ru.solution.test_task_for_gitflic_team.entities.Task;
+import ru.solution.test_task_for_gitflic_team.entity.Task;
 
 public class TaskResponseDto {
     private Long id;
