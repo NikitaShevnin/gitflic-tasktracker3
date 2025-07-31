@@ -50,7 +50,7 @@ api будет доступно на порту `8080`, PostgreSQL — на `543
 
    далее получаем ответ сервера 200 OK
 
-   для всех дальнейших запросов необходимо передавать заголовок Authorization: Basic Auth
+   (!) для всех дальнейших запросов необходимо передавать заголовок Authorization: Basic Auth
 
 
 3. **Создание задачи**  
@@ -75,13 +75,26 @@ api будет доступно на порту `8080`, PostgreSQL — на `543
    Что бы посмотреть список задач достаточно просто отправить `GET` запрос на  `http://localhost:8080/api/tasks` и в ответе вернётся список всех задач.
 
 5. **Получение задачи по ID**  
-   `GET http://localhost:8080/api/tasks/{id}`  
+   для получения конкретной задачи из списка по id мы просто отправляем `GET` запрос на `http://localhost:8080/api/tasks/{id}`
+
+   пример: `GET http://localhost:8080/api/tasks/47`
 
 6. **Обновление задачи**  
-   `PUT http://localhost:8080/api/tasks/{id}` (тело как при создании)  
+   По простому отправляем `PUT` на `http://localhost:8080/api/tasks/{id}`
+   (!) тело запроса мы переписываем в точно таком же формате как при создании задачи (см. пункт 3).
+
+   пример: `GET` `http://localhost:8080/api/tasks/47`
+
+   ```json  
+   {  
+     "title": "Моя обновлённая таска",  
+     "description": "Описание обновлённой таски",  
+     "assignees": [1]  
+   }  
+   ```  
 
 7. **Удаление задачи**  
-   `DELETE http://localhost:8080/api/tasks/{id}`  
+   отправляем `DELETE` запрос на `http://localhost:8080/api/tasks/{id}` с указанием id задачи и она удаляется
 
 8. **Изменение статуса задачи**  
-   `POST http://localhost:8080/api/tasks/{id}/status?status=IN_PROGRESS`  
+   отправляем `POST` на `http://localhost:8080/api/tasks/{id}/status?status=IN_PROGRESS` обязательно с указанем id задачи.
