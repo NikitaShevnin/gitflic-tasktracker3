@@ -6,9 +6,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import ru.solution.test_task_for_gitflic_team.entities.Task;
 import ru.solution.test_task_for_gitflic_team.entities.TaskStatus;
 import ru.solution.test_task_for_gitflic_team.entities.User;
@@ -23,7 +20,6 @@ import java.util.Set;
 
 @Slf4j
 @Service
-@Validated
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
@@ -58,7 +54,7 @@ public class TaskService {
 
     @Transactional
     @CacheEvict(value = {"tasks", "task"}, allEntries = true)
-    public TaskResponseDto create(@Valid Task task, @Valid User creator, Set<Long> assigneeIds) {
+    public TaskResponseDto create(Task task, User creator, Set<Long> assigneeIds) {
         log.info("Creating new task by user ID: {}", creator.getId());
         log.debug("Task details - Title: {}, Assignees IDs: {}", task.getTitle(), assigneeIds);
         
@@ -76,7 +72,7 @@ public class TaskService {
 
     @Transactional
     @CacheEvict(value = {"tasks", "task"}, key = "#id", allEntries = true)
-    public TaskResponseDto update(Long id, @Valid Task updated, @Valid User requester) {
+    public TaskResponseDto update(Long id, Task updated, User requester) {
         log.info("Updating task ID: {} by user ID: {}", id, requester.getId());
         
         Task task = getTask(id);
@@ -97,7 +93,7 @@ public class TaskService {
 
     @Transactional
     @CacheEvict(value = {"tasks", "task"}, key = "#id", allEntries = true)
-    public void delete(Long id, @Valid User requester) {
+    public void delete(Long id, User requester) {
         log.info("Deleting task ID: {} by user ID: {}", id, requester.getId());
         
         Task task = getTask(id);
@@ -112,7 +108,7 @@ public class TaskService {
 
     @Transactional
     @CacheEvict(value = {"tasks", "task"}, key = "#id", allEntries = true)
-    public TaskResponseDto changeStatus(Long id, @NotNull TaskStatus status, @Valid User requester) {
+    public TaskResponseDto changeStatus(Long id, TaskStatus status, User requester) {
         log.info("Changing status for task ID: {} to {} by user ID: {}", 
                 id, status, requester.getId());
         
