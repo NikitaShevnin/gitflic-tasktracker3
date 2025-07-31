@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.solution.test_task_for_gitflic_team.entity.User;
 import ru.solution.test_task_for_gitflic_team.repository.UserRepository;
 import ru.solution.test_task_for_gitflic_team.exception.Exception;
+import ru.solution.test_task_for_gitflic_team.exception.NotFoundException;
 
 @Slf4j
 @Service
@@ -24,7 +25,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.error("User not found with username: {}", username);
-                    return new jakarta.persistence.EntityNotFoundException("User not found");
+                    return new NotFoundException(Exception.USER_NOT_FOUND);
                 });
         log.info("User loaded successfully: {}", username);
         return user;

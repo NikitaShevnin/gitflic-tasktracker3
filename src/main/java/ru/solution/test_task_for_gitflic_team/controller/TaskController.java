@@ -17,6 +17,7 @@ import ru.solution.test_task_for_gitflic_team.entity.Task;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import ru.solution.test_task_for_gitflic_team.exception.NotFoundException;
 
 @Slf4j
 @RestController
@@ -100,7 +101,7 @@ public class TaskController {
         return new ErrorResponse(ex.getMessage());
     }
 
-    @ExceptionHandler({NoSuchElementException.class, UsernameNotFoundException.class})
+    @ExceptionHandler({NoSuchElementException.class, UsernameNotFoundException.class, NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(Exception ex) {
         return new ErrorResponse(ex.getMessage());
