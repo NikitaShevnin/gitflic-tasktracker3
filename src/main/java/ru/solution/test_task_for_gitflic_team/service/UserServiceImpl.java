@@ -2,9 +2,6 @@ package ru.solution.test_task_for_gitflic_team.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +16,6 @@ import ru.solution.test_task_for_gitflic_team.exception.Exception;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,13 +48,4 @@ public class UserServiceImpl implements UserService {
         return registeredUser;
     }
 
-    @Override
-    public User login(String username, String password) {
-        var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = (User) authentication.getPrincipal();
-        user.setPassword(null);
-        return user;
-    }
 }
