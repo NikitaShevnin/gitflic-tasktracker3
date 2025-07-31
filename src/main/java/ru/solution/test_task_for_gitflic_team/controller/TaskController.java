@@ -5,10 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.solution.test_task_for_gitflic_team.dto.TaskDto;
-import ru.solution.test_task_for_gitflic_team.dto.ErrorResponse;
 import ru.solution.test_task_for_gitflic_team.entity.TaskStatus;
 import ru.solution.test_task_for_gitflic_team.entity.User;
 import ru.solution.test_task_for_gitflic_team.service.TaskService;
@@ -16,8 +14,7 @@ import ru.solution.test_task_for_gitflic_team.dto.TaskResponseDto;
 import ru.solution.test_task_for_gitflic_team.entity.Task;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import ru.solution.test_task_for_gitflic_team.exception.NotFoundException;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -35,7 +32,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public TaskResponseDto get(@PathVariable Long id) {
+    public TaskResponseDto get(@PathVariable UUID id) {
         log.info("Requesting task with ID: {}", id);
         TaskResponseDto task = taskService.findById(id);
         log.debug("Found task: ID={}, Title={}", id, task.getTitle());
@@ -59,7 +56,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public TaskResponseDto update(@PathVariable Long id,
+    public TaskResponseDto update(@PathVariable UUID id,
                                 @RequestBody @Valid TaskDto dto,
                                 @AuthenticationPrincipal User creator) {
         log.info("Updating task ID: {} by user {} (ID: {})", 
@@ -77,7 +74,7 @@ public class TaskController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id, @AuthenticationPrincipal User user) {
+    public void delete(@PathVariable UUID id, @AuthenticationPrincipal User user) {
         log.info("Deleting task ID: {} by user {} (ID: {})", 
                 id, user.getUsername(), user.getId());
         taskService.delete(id, user);
@@ -85,7 +82,7 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/status")
-    public TaskResponseDto changeStatus(@PathVariable Long id,
+    public TaskResponseDto changeStatus(@PathVariable UUID id,
                                       @RequestParam TaskStatus status,
                                       @AuthenticationPrincipal User user) {
         log.info("Changing status for task ID: {} to {} by user {} (ID: {})",
@@ -95,21 +92,4 @@ public class TaskController {
         return updatedTask;
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalArgument(IllegalArgumentException ex) {
-        return new ErrorResponse(ex.getMessage());
-    }
-
-    @ExceptionHandler({NoSuchElementException.class, UsernameNotFoundException.class, NotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(Exception ex) {
-        return new ErrorResponse(ex.getMessage());
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRuntime(RuntimeException ex) {
-        return new ErrorResponse(ex.getMessage());
-    }
 }

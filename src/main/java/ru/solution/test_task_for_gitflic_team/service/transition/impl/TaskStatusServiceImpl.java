@@ -1,9 +1,10 @@
-package ru.solution.test_task_for_gitflic_team.service.transition;
+package ru.solution.test_task_for_gitflic_team.service.transition.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.solution.test_task_for_gitflic_team.entity.TaskStatus;
 import ru.solution.test_task_for_gitflic_team.exception.Exception;
+import ru.solution.test_task_for_gitflic_team.service.transition.TaskStatusService;
 
 @Slf4j
 @Service

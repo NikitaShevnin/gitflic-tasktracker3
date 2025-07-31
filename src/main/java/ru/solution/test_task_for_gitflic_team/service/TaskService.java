@@ -11,13 +11,13 @@ import java.util.Set;
 public interface TaskService {
     List<TaskResponseDto> findAll();
 
-    TaskResponseDto findById(Long id);
+    TaskResponseDto findById(java.util.UUID id);
 
-    TaskResponseDto create(Task task, User creator, Set<Long> assigneeIds);
+    TaskResponseDto create(Task task, User creator, Set<java.util.UUID> assigneeIds);
 
-    TaskResponseDto update(Long id, Task updated, User requester);
+    TaskResponseDto update(java.util.UUID id, Task updated, User requester);
 
-    void delete(Long id, User requester);
+    void delete(java.util.UUID id, User requester);
 
-    TaskResponseDto changeStatus(Long id, TaskStatus status, User requester);
+    TaskResponseDto changeStatus(java.util.UUID id, TaskStatus status, User requester);
 }

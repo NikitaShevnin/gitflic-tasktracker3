@@ -7,11 +7,12 @@ import ru.solution.test_task_for_gitflic_team.entity.Task;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Query("select distinct t from Task t join fetch t.creator left join fetch t.assignees")
     List<Task> findAllWithUsers();
 
     @Query("select t from Task t join fetch t.creator left join fetch t.assignees where t.id = :id")
-    Optional<Task> findByIdWithUsers(@Param("id") Long id);
+    Optional<Task> findByIdWithUsers(@Param("id") UUID id);
 }
